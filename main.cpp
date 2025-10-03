@@ -1,211 +1,131 @@
-//-----------ASSINGMENT---------------
-//----------LAB 1 TASKS---------------
-
-
-//NAME HILAL AHMAD KHAN
-//Programme: BS AI(A)
-//Submitted to: SIR SHAYAN SHAH
-//Date: 27/09/2025
-
-//-------------
-//TASK 1
-//-------------
-
-//#include <iostream>
-//using namespace std;
-//
-//int main() {
-//    // Prices
-//    float Espresso = 100.0;
-//    float Latte = 200.0;
-//    float Capuccino = 250.0;
-//
-//    // Quantities
-//    int Q_E, Q_L, Q_C;
-//
-//    // Input
-//    cout << "Enter the Quantity of Espresso: ";
-//    cin >> Q_E;
-//
-//    cout << "Enter the Quantity of Latte: ";
-//    cin >> Q_L;
-//
-//    cout << "Enter the Quantity of Capuccino: ";
-//    cin >> Q_C;
-//
-//    // Pointers
-//    float* ptrEsp = &Espresso;
-//    float* ptrLat = &Latte;
-//    float* ptrCap = &Capuccino;
-//
-//    int* ptrQ_E = &Q_E;
-//    int* ptrQ_L = &Q_L;
-//    int* ptrQ_C = &Q_C;
-//
-//    // Total calculation
-//    float Total = (*ptrEsp * *ptrQ_E) + (*ptrLat * *ptrQ_L) + (*ptrCap * *ptrQ_C);
-//
-//    // Bill
-//    cout << "---------- Cafe Bill ----------\n";
-//    cout << "Espresso   (" << *ptrQ_E << " x " << *ptrEsp << " ) = " << (*ptrEsp * *ptrQ_E) << endl;
-//    cout << "Latte      (" << *ptrQ_L << " x " << *ptrLat << " ) = " << (*ptrLat * *ptrQ_L) << endl;
-//    cout << "Capuccino  (" << *ptrQ_C << " x " << *ptrCap << " ) = " << (*ptrCap * *ptrQ_C) << endl;
-//    cout << "-------------------------------\n";
-//    cout << "Total = " << Total << endl;
-//
-//    return 0;
-//}
-
-//----------------
-//TASK 2
-//----------------
-
 #include <iostream>
 using namespace std;
-// Function to generate the secret code (factorial)
-//int generateCode(int n) {
-//    if (n == 0) {
-//        return 1;   // base case (bonus twist)
-//    }
-//
-//    int result = 1;
-//    for (int i = n; i >= 1; i--) {
-//        result *= i;
-//    }
-//    return result;
-//}
-//
-//int main() {
-//    int number;
-//
-//    // Function pointer declaration
-//    int (*codePtr)(int);
-//
-//    // Assign pointer to the function
-//    codePtr = generateCode;
-//
-//    // User input
-//    cout << "Enter a number: ";
-//    cin >> number;
-//
-//    // Call function via pointer
-//    int secretCode = codePtr(number);
-//
-//    // Output
-//    cout << "Your secret code is: " << secretCode << endl;
-//
-//    return 0;
-//}
 
-//----------------
-//TASK 3
-//----------------
+// Node structure
+struct Node {
+    int data;
+    Node* next;
+    Node(int d) : data(d), next(nullptr) {}
+};
 
-//#include <iostream>
-//#include <cstdlib>   // for malloc() and free()
-//using namespace std;
-//
-//int main() {
-//    int numPlayers;
-//
-//    // Step 1: Ask the user how many players
-//    cout << "Enter the number of players: ";
-//    cin >> numPlayers;
-//
-//    // Step 2: Allocate memory dynamically using malloc
-//    int* scores = (int*) malloc(numPlayers * sizeof(int));
-//
-//    // Check if allocation succeeded
-//    if (scores == NULL) {
-//        cout << "Memory allocation failed!" << endl;
-//        return 1; // exit program
-//    }
-//
-//    // Step 3: Take input for all scores
-//    cout << "\nEnter the scores for each player:\n";
-//    for (int i = 0; i < numPlayers; i++) {
-//        cout << "Player " << (i + 1) << ": ";
-//        cin >> scores[i];
-//    }
-//
-//    // Step 4: Display the scores back
-//    cout << "\n--- Tournament Scores ---\n";
-//    for (int i = 0; i < numPlayers; i++) {
-//        cout << "Player " << (i + 1) << " scored: " << scores[i] << endl;
-//    }
-//
-//    // Step 5: Release the memory back to the system
-//    free(scores);
-//
-//    return 0;
-//}
+// LinkedList class
+class LinkedList {
+private:
+    Node* head;
+public:
+    LinkedList() : head(nullptr) {}
+    
+    // Destructor to free memory
+    ~LinkedList() {
+        while (head) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
 
-//-------------
-//TASK 4
-//-------------
+    // Insert at the beginning (emergency passenger)
+    void insertAtBeginning(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = head;
+        head = newNode;
+    }
 
-//#include <iostream>
-//#include <cstdlib>   
-//using namespace std;
-//
-//int main() {
-//    int numParticipants;
-//
-//    // Ask how many participants
-//    cout << "Enter the number of participants: ";
-//    cin >> numParticipants;
-//
-//    if (numParticipants <= 0) {
-//        cout << "Please enter a positive number of participants.\n";
-//        return 0;
-//    }
-//
-//    // Allocate with calloc -> memory initialized to 0 (all absent)
-//    int* attendance = (int*) calloc(numParticipants, sizeof(int));
-//    if (attendance == NULL) {
-//        cout << "Memory allocation failed!\n";
-//        return 1;
-//    }
-//
-//    // Show the initial (clean) attendance — should all be zeros
-//    cout << "\nInitial attendance (0 = absent, 1 = present):\n";
-//    for (int i = 0; i < numParticipants; ++i) {
-//        cout << "Participant " << (i + 1) << ": " << attendance[i] << '\n';
-//    }
-//
-//    // Let user mark some participants as present
-//    int presentCount;
-//    cout << "\nHow many participants are present? ";
-//    cin >> presentCount;
-//
-//    if (presentCount < 0) presentCount = 0;
-//    if (presentCount > numParticipants) {
-//        cout << "You asked to mark more participants present than exist. "
-//             << "Only the first " << numParticipants << " entries will be accepted.\n";
-//        presentCount = numParticipants;
-//    }
-//
-//    cout << "Enter the participant numbers (1 to " << numParticipants << ") who are present:\n";
-//    for (int i = 0; i < presentCount; ++i) {
-//        int index;
-//        cin >> index;
-//        if (index >= 1 && index <= numParticipants) {
-//            attendance[index - 1] = 1;  // mark present
-//        } else {
-//            cout << "Invalid participant number: " << index << " (ignored)\n";
-//        }
-//    }
-//
-//    // Display final attendance list
-//    cout << "\n--- Final Attendance Register ---\n";
-//    for (int i = 0; i < numParticipants; ++i) {
-//        cout << "Participant " << (i + 1) << ": " 
-//             << attendance[i] << "  (" << (attendance[i] ? "Present" : "Absent") << ")\n";
-//    }
-//
-//    // Free memory
-//    free(attendance);
-//
-//    return 0;
-//}
+    // Insert at the end (normal passenger)
+    void insertAtEnd(int value) {
+        Node* newNode = new Node(value);
+        if (!head) {
+            head = newNode;
+            return;
+        }
+        Node* current = head;
+        while (current->next) {
+            current = current->next;
+        }
+        current->next = newNode;
+    }
 
+    // Insert at a given position (special booking passenger)
+    // Positions are 0-based index, so position 0 means beginning
+    void insertAtPosition(int value, int pos) {
+        if (pos <= 0) {
+            insertAtBeginning(value);
+            return;
+        }
+
+        Node* newNode = new Node(value);
+        Node* current = head;
+
+        // Traverse to node just before position pos
+        int currentPos = 0;
+        while (current && currentPos < pos - 1) {
+            current = current->next;
+            currentPos++;
+        }
+
+        // If current is nullptr, position is beyond list length; insert at end
+        if (!current) {
+            insertAtEnd(value);
+            delete newNode; // already inserted new node inside insertAtEnd, so delete this
+            return;
+        }
+
+        // Insert newNode after current
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+
+    // Delete from beginning (first passenger boards)
+    // Optional output of removed passenger ID via removedValue pointer
+    bool deleteFromBeginning(int* removedValue = nullptr) {
+        if (!head) return false; // empty list
+
+        Node* temp = head;
+        if (removedValue) {
+            *removedValue = temp->data;
+        }
+        head = head->next;
+        delete temp;
+        return true;
+    }
+
+    // Display the queue
+    void display() const {
+        Node* current = head;
+        while (current) {
+            cout << current->data;
+            if (current->next) cout << " -> ";
+            current = current->next;
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    LinkedList list;
+
+    // Step 1: Add 3 passengers at the end
+    list.insertAtEnd(101);
+    list.insertAtEnd(102);
+    list.insertAtEnd(103);
+    cout << "Initial Queue after adding passengers:\n";
+    list.display();
+
+    // Step 2: Emergency passenger at beginning
+    list.insertAtBeginning(999);
+    cout << "After adding an emergency passenger at beginning:\n";
+    list.display();
+
+    // Step 3: Special booking passenger at position 2
+    list.insertAtPosition(555, 2);
+    cout << "After inserting special booking passenger at position 2:\n";
+    list.display();
+
+    // Step 4: First passenger boards (delete from beginning)
+    int removed;
+    list.deleteFromBeginning(&removed);
+    cout << "After first passenger boards (deletion):\n";
+    list.display();
+
+    return 0;
+}
