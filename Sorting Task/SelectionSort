@@ -1,0 +1,64 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+// Function to perform selection sort
+void sortSelection(int numbers[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        int minPos = i;
+        for (int j = i + 1; j < size; j++) {
+            if (numbers[i] == numbers[j])
+                continue;
+
+            if (numbers[j] < numbers[minPos])
+                minPos = j;
+        }
+        swap(numbers[i], numbers[minPos]);
+    }
+}
+
+int main() {
+    ifstream inputFile("numbers.txt");
+    if (!inputFile) {
+        cout << "Unable to open the file.\n";
+        return 0;
+    }
+
+    string lineData, value;
+    getline(inputFile, lineData);
+    inputFile.close();
+
+    // Count number of integers in the file
+    int totalNumbers = 1;
+    for (char ch : lineData) {
+        if (ch == ',')
+            totalNumbers++;
+    }
+
+    int* numberArray = new int[totalNumbers];
+    int index = 0;
+    stringstream dataStream(lineData);
+    while (getline(dataStream, value, ',')) {
+        numberArray[index++] = stoi(value);
+    }
+
+    auto startTime = high_resolution_clock::now();
+    sortSelection(numberArray, index);
+    auto endTime = high_resolution_clock::now();
+    auto timeTaken = duration_cast<milliseconds>(endTime - startTime);
+
+    cout << "Sorted Numbers: ";
+    for (int i = 0; i < index; i++)
+        cout << numberArray[i] << " ";
+
+    cout << "\nTime required by selection sort: "
+         << timeTaken.count() << " milliseconds\n";
+
+    delete[] numberArray;
+    return 0;
+}
