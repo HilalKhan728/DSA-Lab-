@@ -1,0 +1,72 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+void bublsrt_algo(int data[], int length) {
+    bool didSwap;
+    for (int round = 0; round < length - 1; round++) {
+        didSwap = false;
+        for (int pos = 0; pos < length - round - 1; pos++) {
+            if (data[pos] > data[pos + 1]) {
+                swap(data[pos], data[pos + 1]);
+                didSwap = true;
+            }
+        }
+        if (!didSwap)
+            break;
+    }
+}
+
+int main() {
+    ifstream inputStream("numbers.txt");
+    if (!inputStream) {
+        cout << "Error in opening file\n";
+        return 0;
+    }
+
+    string dataLine, tempLine, valueStr;
+
+    // 🔧 FIX: read complete file
+    while (getline(inputStream, tempLine)) {
+        if (!dataLine.empty())
+            dataLine += ",";
+        dataLine += tempLine;
+    }
+    inputStream.close();
+
+    int totalValues = 1;
+    for (char ch : dataLine) {
+        if (ch == ',')
+            totalValues++;
+    }
+
+    int* numberList = new int[totalValues];
+    int actualCount = 0;
+
+    stringstream parser(dataLine);
+    while (getline(parser, valueStr, ',')) {
+        if (!valueStr.empty())        // 🔧 safety
+            numberList[actualCount++] = stoi(valueStr);
+    }
+
+    auto beginTime = high_resolution_clock::now();
+    bublsrt_algo(numberList, actualCount);
+    auto finishTime = high_resolution_clock::now();
+
+    auto timeTaken = duration_cast<milliseconds>(finishTime - beginTime);
+
+    cout << "Sorted Array: ";
+    for (int idx = 0; idx < actualCount; idx++)
+        cout << numberList[idx] << " ";
+
+    cout << "\nTime taken by bubble sort: "
+         << timeTaken.count() << " milliseconds\n";
+
+    delete[] numberList;
+    return 0;
+}
