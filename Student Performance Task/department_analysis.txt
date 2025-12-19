@@ -1,0 +1,63 @@
+Department: BBA
+Total Students: 1
+Average CGPA: 3.42
+Highest CGPA: 3.42
+Lowest CGPA: 3.42
+Average Credit Hours: 144
+
+Department: CHE
+Total Students: 2
+Average CGPA: 2.48
+Highest CGPA: 2.92
+Lowest CGPA: 2.05
+Average Credit Hours: 108
+
+Department: CIV
+Total Students: 3
+Average CGPA: 3.00
+Highest CGPA: 3.36
+Lowest CGPA: 2.59
+Average Credit Hours: 78
+
+Department: CSE
+Total Students: 3
+Average CGPA: 3.17
+Highest CGPA: 3.66
+Lowest CGPA: 2.81
+Average Credit Hours: 54
+
+Department: ECO
+Total Students: 1
+Average CGPA: 3.64
+Highest CGPA: 3.64
+Lowest CGPA: 3.64
+Average Credit Hours: 144
+
+Department: EEE
+Total Students: 2
+Average CGPA: 2.75
+Highest CGPA: 3.29
+Lowest CGPA: 2.22
+Average Credit Hours: 72
+
+Department: MAT
+Total Students: 5
+Average CGPA: 3.44
+Highest CGPA: 3.93
+Lowest CGPA: 2.36
+Average Credit Hours: 75
+
+Department: MEC
+Total Students: 2
+Average CGPA: 2.38
+Highest CGPA: 2.42
+Lowest CGPA: 2.35
+Average Credit Hours: 63
+
+Department: PHY
+Total Students: 6
+Average CGPA: 3.10
+Highest CGPA: 3.43
+Lowest CGPA: 2.79
+Average Credit Hours: 84
+
