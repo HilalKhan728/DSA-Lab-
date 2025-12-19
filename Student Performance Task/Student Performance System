@@ -1,0 +1,328 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+/* ================== STRUCTURES ================== */
+struct Student {
+    int id, semester, creditHours, enrollmentYear;
+    string name, dept;
+    double cgpa;
+};
+
+struct Node {
+    Student data;
+    Node* next;
+};
+
+/* ================== LINKED LIST FUNCTIONS ================== */
+void insertEnd(Node*& head, Student s) {
+    Node* n = new Node{ s, nullptr };
+    if (!head) { head = n; return; }
+    Node* t = head;
+    while (t->next) t = t->next;
+    t->next = n;
+}
+
+Node* cloneList(Node* head) {
+    Node* newHead = nullptr;
+    Node* t = head;
+    while (t) { insertEnd(newHead, t->data); t = t->next; }
+    return newHead;
+}
+
+void freeList(Node*& head) {
+    while (head) { Node* t = head; head = head->next; delete t; }
+}
+
+/* ================== INPUT FILE GENERATION ================== */
+void generateInputFile(int totalStudents = 25) {
+    ofstream out("students_data.txt");
+    if (!out) { cout << "Error creating input file!\n"; return; }
+    srand(time(0));
+
+    string firstNames[] = { "Ali","Ahmed","Fatima","Ayesha","Hassan","Usman","Zainab","Omar" };
+    string lastNames[]  = { "Khan","Ahmed","Ali","Malik","Raza","Shah" };
+    string departments[] = { "CSE","EEE","MEC","CIV","ARC","CHE","BBA","ECO","PHY","MAT" };
+
+    out << totalStudents << endl;
+    for (int i = 0; i < totalStudents; i++) {
+        Student s;
+        s.id = 200001 + i;
+        s.name = firstNames[rand() % 8] + " " + lastNames[rand() % 6];
+        s.dept = departments[rand() % 10];
+        s.semester = rand() % 8 + 1;
+        s.cgpa = 2.0 + (rand() % 201)/100.0;
+        s.creditHours = s.semester*18;
+        s.enrollmentYear = 2018 + rand() % 6;
+
+        out << s.id << " " << s.name << " " << s.dept << " "
+            << s.semester << " " << fixed << setprecision(2) << s.cgpa << " "
+            << s.creditHours << " " << s.enrollmentYear << endl;
+    }
+    out.close();
+}
+
+/* ================== SORTING ALGORITHMS ================== */
+Node* mergeCGPA(Node* a, Node* b) {
+    if (!a) return b;
+    if (!b) return a;
+    if (a->data.cgpa > b->data.cgpa || 
+        (a->data.cgpa == b->data.cgpa && a->data.creditHours > b->data.creditHours)) {
+        a->next = mergeCGPA(a->next, b);
+        return a;
+    } else {
+        b->next = mergeCGPA(a, b->next);
+        return b;
+    }
+}
+
+Node* split(Node* head) {
+    Node* slow = head;
+    Node* fast = head->next;
+    while(fast && fast->next) { slow = slow->next; fast = fast->next->next; }
+    Node* mid = slow->next;
+    slow->next = nullptr;
+    return mid;
+}
+
+Node* mergeSortCGPA(Node* head) {
+    if (!head || !head->next) return head;
+    Node* mid = split(head);
+    return mergeCGPA(mergeSortCGPA(head), mergeSortCGPA(mid));
+}
+
+Node* insertionSortYear(Node* head) {
+    Node* sorted = nullptr;
+    while(head) {
+        Node* curr = head;
+        head = head->next;
+        if(!sorted || curr->data.enrollmentYear < sorted->data.enrollmentYear || 
+           (curr->data.enrollmentYear == sorted->data.enrollmentYear && curr->data.id < sorted->data.id)) {
+            curr->next = sorted;
+            sorted = curr;
+        } else {
+            Node* t = sorted;
+            while(t->next && !(curr->data.enrollmentYear < t->next->data.enrollmentYear || 
+                               (curr->data.enrollmentYear == t->next->data.enrollmentYear && curr->data.id < t->next->data.id)))
+                t = t->next;
+            curr->next = t->next;
+            t->next = curr;
+        }
+    }
+    return sorted;
+}
+
+Node* bubbleSortName(Node* head) {
+    if(!head) return head;
+    bool swapped;
+    do {
+        swapped = false;
+        Node* t = head;
+        while(t && t->next) {
+            if(t->data.name > t->next->data.name) {
+                swap(t->data, t->next->data);
+                swapped = true;
+            }
+            t = t->next;
+        }
+    } while(swapped);
+    return head;
+}
+
+Node* mergeDept(Node* a, Node* b) {
+    if(!a) return b;
+    if(!b) return a;
+    if(a->data.dept < b->data.dept || 
+      (a->data.dept == b->data.dept && a->data.semester < b->data.semester) ||
+      (a->data.dept == b->data.dept && a->data.semester == b->data.semester && a->data.cgpa > b->data.cgpa)) {
+        a->next = mergeDept(a->next, b);
+        return a;
+    } else {
+        b->next = mergeDept(a, b->next);
+        return b;
+    }
+}
+
+Node* mergeSortDept(Node* head) {
+    if(!head || !head->next) return head;
+    Node* mid = split(head);
+    return mergeDept(mergeSortDept(head), mergeSortDept(mid));
+}
+
+/* ================== OUTPUT FUNCTIONS WITH FIXED WIDTH ================== */
+void writeRankedByCGPA(Node* head) {
+    ofstream out("ranked_by_cgpa.txt");
+    out << "====================================================\n";
+    out << "        STUDENTS RANKED BY CGPA\n";
+    out << "====================================================\n";
+    out << left << setw(5) << "Rank" << "|"
+        << setw(8) << "ID" << "|"
+        << setw(20) << "Name" << "|"
+        << setw(6) << "Dept" << "|"
+        << setw(4) << "Sem" << "|"
+        << setw(5) << "CGPA" << "|"
+        << setw(8) << "Credits" << "|"
+        << setw(6) << "Year" << endl;
+    out << "-----|--------|--------------------|------|----|-----|--------|------\n";
+
+    int rank = 1;
+    while(head) {
+        out << setw(5) << rank++ << "|"
+            << setw(8) << head->data.id << "|"
+            << setw(20) << head->data.name << "|"
+            << setw(6) << head->data.dept << "|"
+            << setw(4) << head->data.semester << "|"
+            << setw(5) << fixed << setprecision(2) << head->data.cgpa << "|"
+            << setw(8) << head->data.creditHours << "|"
+            << setw(6) << head->data.enrollmentYear << endl;
+        head = head->next;
+    }
+    out << "====================================================\n";
+}
+
+void writeSortedByEnrollment(Node* head) {
+    ofstream out("sorted_by_enrollment.txt");
+    int currentYear = -1;
+    int count = 0; double totalCGPA = 0.0;
+
+    while(head) {
+        if(head->data.enrollmentYear != currentYear) {
+            if(count > 0)
+                out << "Average CGPA for year " << currentYear << ": " << fixed << setprecision(2) << totalCGPA/count << "\n\n";
+
+            currentYear = head->data.enrollmentYear;
+            out << "Enrollment Year: " << currentYear << "\n";
+            out << left << setw(8) << "ID" << "|"
+                << setw(20) << "Name" << "|"
+                << setw(6) << "Dept" << "|"
+                << setw(4) << "Sem" << "|"
+                << setw(5) << "CGPA" << endl;
+            out << "--------|--------------------|------|----|-----\n";
+
+            count = 0; totalCGPA = 0.0;
+        }
+
+        out << setw(8) << head->data.id << "|"
+            << setw(20) << head->data.name << "|"
+            << setw(6) << head->data.dept << "|"
+            << setw(4) << head->data.semester << "|"
+            << setw(5) << fixed << setprecision(2) << head->data.cgpa << endl;
+
+        totalCGPA += head->data.cgpa;
+        count++;
+        head = head->next;
+    }
+
+    if(count > 0)
+        out << "Average CGPA for year " << currentYear << ": " << fixed << setprecision(2) << totalCGPA/count << "\n";
+}
+
+void writeDepartmentAnalysis(Node* head) {
+    ofstream out("department_analysis.txt");
+    string currentDept = "";
+    int totalStudents = 0; double totalCGPA = 0.0, minCGPA=4.0, maxCGPA=0.0; int totalCredits=0;
+
+    while(head) {
+        if(head->data.dept != currentDept) {
+            if(totalStudents > 0) {
+                out << "Department: " << currentDept << "\n";
+                out << "Total Students: " << totalStudents << "\n";
+                out << "Average CGPA: " << fixed << setprecision(2) << totalCGPA/totalStudents << "\n";
+                out << "Highest CGPA: " << fixed << setprecision(2) << maxCGPA << "\n";
+                out << "Lowest CGPA: " << fixed << setprecision(2) << minCGPA << "\n";
+                out << "Average Credit Hours: " << fixed << setprecision(0) << totalCredits/totalStudents << "\n\n";
+            }
+            currentDept = head->data.dept;
+            totalStudents = totalCGPA = totalCredits = 0; minCGPA=4.0; maxCGPA=0.0;
+        }
+
+        totalStudents++; totalCGPA += head->data.cgpa; totalCredits += head->data.creditHours;
+        if(head->data.cgpa > maxCGPA) maxCGPA = head->data.cgpa;
+        if(head->data.cgpa < minCGPA) minCGPA = head->data.cgpa;
+
+        head = head->next;
+    }
+
+    if(totalStudents > 0) {
+        out << "Department: " << currentDept << "\n";
+        out << "Total Students: " << totalStudents << "\n";
+        out << "Average CGPA: " << fixed << setprecision(2) << totalCGPA/totalStudents << "\n";
+        out << "Highest CGPA: " << fixed << setprecision(2) << maxCGPA << "\n";
+        out << "Lowest CGPA: " << fixed << setprecision(2) << minCGPA << "\n";
+        out << "Average Credit Hours: " << fixed << setprecision(0) << totalCredits/totalStudents << "\n\n";
+    }
+}
+
+void writePerformanceTiers(Node* head) {
+    ofstream out("performance_tiers.txt");
+    while(head) {
+        string tier;
+        if(head->data.cgpa >= 3.70) tier = "Elite Tier";
+        else if(head->data.cgpa >= 3.30) tier = "High Achievers";
+        else if(head->data.cgpa >= 3.00) tier = "Good Standing";
+        else if(head->data.cgpa >= 2.50) tier = "Satisfactory";
+        else tier = "Needs Improvement";
+
+        out << left << setw(20) << tier 
+            << setw(8) << head->data.id 
+            << setw(20) << head->data.name 
+            << setw(5) << fixed << setprecision(2) << head->data.cgpa << endl;
+
+        head = head->next;
+    }
+}
+
+/* ================== MAIN ================== */
+int main() {
+    // Generate input file if missing
+    ifstream test("students_data.txt");
+    if(!test) {
+        cout << "Input file not found. Generating sample data...\n";
+        generateInputFile();
+    }
+    test.close();
+
+    ifstream in("students_data.txt");
+    if(!in) { cout << "Cannot open input file!\n"; return 1; }
+    int total; in >> total;
+    Node* list = nullptr;
+    string deptCodes[] = { "CSE","EEE","MEC","CIV","ARC","CHE","BBA","ECO","PHY","MAT" };
+
+    for(int i=0;i<total;i++) {
+        Student s; in >> s.id;
+        string word, name = "";
+        while(true) {
+            in >> word;
+            bool isDept=false;
+            for(string d : deptCodes) if(word==d){ s.dept=d; isDept=true; break;}
+            if(isDept) break;
+            if(!name.empty()) name+=" ";
+            name+=word;
+        }
+        s.name=name;
+        in >> s.semester >> s.cgpa >> s.creditHours >> s.enrollmentYear;
+        insertEnd(list,s);
+    }
+    in.close();
+
+    Node* cgpaList = mergeSortCGPA(cloneList(list));
+    Node* yearList = insertionSortYear(cloneList(list));
+    Node* deptList = mergeSortDept(cloneList(list));
+    Node* tierList = bubbleSortName(cloneList(list));
+
+    writeRankedByCGPA(cgpaList);
+    writeSortedByEnrollment(yearList);
+    writeDepartmentAnalysis(deptList);
+    writePerformanceTiers(tierList);
+
+    freeList(list); freeList(cgpaList); freeList(yearList); freeList(deptList); freeList(tierList);
+
+    cout << "All output files generated successfully!\n";
+
+    return 0;
+}
