@@ -1,6 +1,6 @@
                                   CHEAT SHEET (STUDENT GUIDE) 
 
-Name: Hilal Ahmad Khan
+Name: Hilal Ahmad Khan.
 Programme: BS AI
 Group: A
 Teacher: Sir Shayan Ali Shah
