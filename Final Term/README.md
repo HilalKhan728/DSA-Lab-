@@ -1,4 +1,4 @@
-                                  CHEAT SHEET (STUDENT GUIDE) 
+                               Arena of Ratings: Real-Time Matchmaking Engine (C++)
 
 Name: Hilal Ahmad Khan
 Programme: BS AI
